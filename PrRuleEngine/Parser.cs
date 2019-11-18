@@ -1,10 +1,13 @@
-﻿using System;
+﻿using PrRuleEngine.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using PrRuleEngine.Constants;
+using PrRuleEngine.Interfaces;
 
 namespace PrRuleEngine
 {
-    // To parse incoming data
+    // TO Parse incoming data
     public class Parser
     {
         private const string fieldSignalName = "signal";
@@ -20,9 +23,9 @@ namespace PrRuleEngine
                 validSignals = new List<SignalData>();
                 invalidSignals = new List<SignalData>();
 
-                foreach (var signal in input.Split(Constants.ObjectEnd))
+                foreach (var signal in input.Split(Constants.Constants.ObjectEnd))
                 {
-                    var elements = signal.Split(new[] { Constants.ElementSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                    var elements = signal.Split(new[] { Constants.Constants.ElementSeparator }, StringSplitOptions.RemoveEmptyEntries);
                     if (elements.Length == 3) // Signal, Value and ValueType
                     {
                         string parsedSignal = string.Empty, parsedValue = string.Empty, parsedValueType = string.Empty;
@@ -31,14 +34,14 @@ namespace PrRuleEngine
                         {
                             if (!string.IsNullOrWhiteSpace(element))
                             {
-                                int indexOfObjectSeparator = element.IndexOf(Constants.ObjectSeparator);
+                                int indexOfObjectSeparator = element.IndexOf(Constants.Constants.ObjectSeparator);
                                 string fieldName = element.Substring(0, indexOfObjectSeparator);
                                 string fieldValue = element.Substring(indexOfObjectSeparator + 1);
 
                                 if (!string.IsNullOrWhiteSpace(fieldName) && !string.IsNullOrWhiteSpace(fieldValue))
                                 {
-                                    fieldName = fieldName.ToLowerInvariant().Split(Constants.ObjectWrapper)[1];
-                                    fieldValue = fieldValue.Split(Constants.ObjectWrapper)[1];
+                                    fieldName = fieldName.ToLowerInvariant().Split(Constants.Constants.ObjectWrapper)[1];
+                                    fieldValue = fieldValue.Split(Constants.Constants.ObjectWrapper)[1];
 
                                     switch (fieldName.ToLowerInvariant())
                                     {
@@ -58,7 +61,7 @@ namespace PrRuleEngine
                                             break;
                                     }
                                 }
-                                else { return false; } // Parsing failed due to invalid input format
+                                else { return false; }
                             }
                         }
 
@@ -66,7 +69,7 @@ namespace PrRuleEngine
                             string.IsNullOrWhiteSpace(parsedValue) ||
                             string.IsNullOrWhiteSpace(parsedValueType))
                         {
-                            return false; // Parsing failed due to invalid input format
+                            return false;
                         }
 
                         var signalData = new SignalData(parsedSignal, parsedValue, parsedValueType);
@@ -76,21 +79,19 @@ namespace PrRuleEngine
                             if (!rule.IsValid(signalData))
                             {
                                 isValidSignal = false;
-                                invalidSignals.Add(signalData); // Add to invalid signal list
+                                invalidSignals.Add(signalData);
 
-                                if (canStopOnFirstValidationFailure) return true; // Parsed successfully but stopping on validation failure.
+                                if (canStopOnFirstValidationFailure) return true;
                                 break;
                             }
                         }
-                        if (isValidSignal) { validSignals.Add(signalData); } // Add to valid signal list
+                        if (isValidSignal) { validSignals.Add(signalData); }
                     }
                 }
                 return true;
             }
             catch (Exception)
             {
-                //TODO: Implement logger
-                //return false; once logger is implemented.
                 throw;
             }
         }
