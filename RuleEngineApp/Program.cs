@@ -21,9 +21,11 @@ namespace RuleEngineApp
             while(input != 0)
             {
                 Console.WriteLine("Welcome to Rule Engine! Select any one option or press 0 to exit!");
+                Console.WriteLine("We are testing the engine on raw_data.json");
                 Console.WriteLine("1. Test Data Without Rules");
                 Console.WriteLine("2. Test Data With Rules from excel file");
                 Console.WriteLine("3. Test Data With custom Rules");
+                Console.WriteLine("0. Exit");
 
                 int.TryParse(Console.ReadLine(), out input);
 
